@@ -31,6 +31,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
 .bar{display:flex;gap:8px;justify-content:center;margin:18px 0}
 h2{font-size:17px;margin:26px 0 8px}
 .it{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:8px;word-break:break-word}
+.hd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}.hd b{color:var(--acc)}.me{cursor:pointer}
 .it small{color:var(--mute);display:block}
 .it a{color:var(--acc);font-weight:600}
 .pr{height:6px;background:var(--line);border-radius:3px;margin-top:8px;overflow:hidden}.pr div{height:100%;width:0;background:var(--ok);transition:width .15s}
@@ -38,6 +39,7 @@ dialog{border:1px solid var(--line);border-radius:16px;background:var(--card);co
 dialog::backdrop{background:rgba(8,16,30,.55)}
 textarea{width:100%;height:130px;font:inherit;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:10px}
 #qr svg{width:100%;height:auto;background:#fff;padding:10px;border-radius:12px}
+.qb{display:flex;align-items:center;justify-content:center;gap:14px;margin:0 0 16px;color:var(--mute);font-size:13px}.qb p{margin:0;max-width:170px}#qrs svg{width:112px;height:112px;background:#fff;padding:6px;border-radius:10px;display:block}
 #qrl{font-size:12px;word-break:break-all;color:var(--mute)}
 video{width:100%;border-radius:12px;background:#000}
 </style>
@@ -47,9 +49,10 @@ video{width:100%;border-radius:12px;background:#000}
   <div class="top"><div><h1>SanDrop</h1><small>Windows, iOS, Android ke beech file aur text bhejo</small></div><button class="g" id="auto" title="Same WiFi auto mode">Auto</button></div>
   <div class="radar"><i></i><i></i><i></i><i></i><div class="me" id="me">...</div></div>
   <p id="st">Connect ho raha hai...</p>
+  <div class="qb"><div id="qrs"></div><p id="qh">Doosre device se ye QR scan karo</p></div>
   <div id="peers"></div>
   <div class="bar"><button id="qrBtn" style="flex:none">QR dikhao</button><button id="scanBtn" class="g">QR scan karo</button></div>
-  <h2>Mila hua</h2>
+  <h2>Mila hua (bhejne wale ka naam ke saath)</h2>
   <div id="inbox"><p style="color:var(--mute);margin:0">Abhi kuch nahi aaya. Doosre device par SanDrop kholo, wo yahan dikhega.</p></div>
 </div>
 
@@ -58,11 +61,14 @@ video{width:100%;border-radius:12px;background:#000}
 <dialog id="td"><h3 style="margin-top:0" id="tt">Text bhejo</h3><textarea id="tx" placeholder="Yahan likho ya paste karo"></textarea><div class="row"><button class="g" id="tc">Cancel</button><button id="ts">Bhejo</button></div></dialog>
 <input type="file" id="fi" multiple hidden>
 
-<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 <script>
 const $=s=>document.querySelector(s);
+function load(u){return new Promise((res,rej)=>{let i=0;(function n(){if(i>=u.length)return rej();const e=document.createElement('script');e.src=u[i++];const t=setTimeout(()=>{e.remove();n()},7000);e.onload=()=>{clearTimeout(t);res()};e.onerror=()=>{clearTimeout(t);n()};document.head.appendChild(e)})()})}
+const LIB={
+peer:['https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js','https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js','https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js'],
+qr:['https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js','https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js','https://unpkg.com/qrcode-generator@1.4.4/qrcode.js'],
+jsqr:['https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js','https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js','https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js','https://unpkg.com/jsqr@1.4.0/dist/jsQR.js']};
+window.onerror=(m)=>{const e=document.getElementById('st');if(e)e.textContent='Error: '+m};
 const A=['Red','Blue','Green','Gold','Pink','Cyan','Lime','Gray'],B=['Fox','Owl','Cat','Bat','Elk','Ant','Yak','Emu'];
 let myName;try{myName=localStorage.sd_name}catch(e){}
 if(!myName){myName=A[Math.random()*8|0]+' '+B[Math.random()*8|0];try{localStorage.sd_name=myName}catch(e){}}
@@ -140,7 +146,8 @@ function render(){
 function add(o){
   const inbox=$('#inbox');if(!inbox.querySelector('.it'))inbox.innerHTML='';
   const el=document.createElement('div');el.className='it';
-  const f=document.createElement('small');f.textContent=(o.from||'Device')+(o.file?' se file: '+o.file:' se text');el.appendChild(f);
+  const h=document.createElement('div');h.className='hd';const sn=document.createElement('b');sn.textContent=o.from||'Device';const tm=document.createElement('small');tm.textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});h.append(sn,tm);el.appendChild(h);
+  if(o.file){const fl=document.createElement('div');fl.textContent=o.file;el.appendChild(fl)}
   if(o.text){const t=document.createElement('div');t.textContent=o.text;el.appendChild(t);
     const b=document.createElement('button');b.className='g';b.style.marginTop='8px';b.textContent='Copy';
     b.onclick=()=>navigator.clipboard.writeText(o.text).then(()=>b.textContent='Copy ho gaya');el.appendChild(b);
@@ -154,7 +161,7 @@ $('#tc').onclick=()=>$('#td').close();
 $('#fi').onchange=async e=>{
   const c=conns[target];if(!c)return;
   for(const f of e.target.files){
-    const id=Math.random().toString(36).slice(2),el=add({file:f.name,from:'Aap ('+(info[target]||{}).name+' ko bhej rahe)',prog:true});
+    const id=Math.random().toString(36).slice(2),el=add({file:f.name,from:'Aap → '+(info[target]||{}).name,prog:true});
     c.send({t:'m',id,name:f.name,size:f.size,type:f.type});
     const S=131072;
     for(let o=0;o<f.size;o+=S){
@@ -171,9 +178,11 @@ addEventListener('dragover',e=>e.preventDefault());
 addEventListener('drop',e=>{e.preventDefault();const ids=Object.keys(info);if(ids.length===1&&e.dataTransfer.files.length){target=ids[0];$('#fi').files=e.dataTransfer.files;$('#fi').onchange({target:$('#fi')})}});
 // QR show
 function link(){return location.origin+location.pathname+'#r='+room.id}
-$('#qrBtn').onclick=()=>{
-  const q=qrcode(0,'M');q.addData(link());q.make();
-  $('#qr').innerHTML=q.createSvgTag(5,0);$('#qrl').textContent=link();$('#qd').showModal();
+function mkqr(cell){const q=qrcode(0,'M');q.addData(link());q.make();return q.createSvgTag(cell,0)}
+async function smallQR(){try{if(typeof qrcode==='undefined')await load(LIB.qr);$('#qrs').innerHTML=mkqr(3)}catch(e){$('#qh').textContent='QR load nahi hua, internet check karo'}}
+$('#qrBtn').onclick=async()=>{
+  try{if(typeof qrcode==='undefined')await load(LIB.qr);$('#qr').innerHTML=mkqr(5);}catch(e){$('#qr').textContent='QR load nahi hua'}
+  $('#qrl').textContent=link();$('#qd').showModal();
 };
 $('#cp').onclick=()=>navigator.clipboard.writeText(link()).then(()=>$('#cp').textContent='Copy ho gaya');
 $('#qx').onclick=()=>$('#qd').close();
@@ -181,6 +190,7 @@ $('#qx').onclick=()=>$('#qd').close();
 let stream,scanning=false;
 $('#scanBtn').onclick=async()=>{
   try{
+    if(typeof jsQR==='undefined')await load(LIB.jsqr);
     stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
     const v=$('#vid');v.srcObject=stream;await v.play();$('#sd').showModal();scanning=true;
     const cv=document.createElement('canvas'),cx=cv.getContext('2d',{willReadFrequently:true});
@@ -196,11 +206,18 @@ $('#scanBtn').onclick=async()=>{
 function stopScan(){scanning=false;if(stream)stream.getTracks().forEach(t=>t.stop());$('#sd').close()}
 $('#sx').onclick=stopScan;
 $('#auto').onclick=()=>{history.replaceState(null,'',location.pathname);location.reload()};
+$('#me').title='Naam badalne ke liye dabao';
+$('#me').onclick=()=>{const n=prompt('Apna naam likho',myName);if(n&&n.trim()){myName=n.trim().slice(0,20);try{localStorage.sd_name=myName}catch(e){}$('#me').textContent=myName;Object.values(conns).forEach(c=>c.send({t:'hi',name:myName,os}))}};
 // start
 (async()=>{
+  status('Library load ho rahi hai...');
+  try{await load(LIB.peer)}catch(e){status('PeerJS load nahi hua. Internet ya CDN block hai, VPN/DNS badal ke try karo.');return}
+  status('Network dhundh rahe hain...');
   room=await getRoom();hubId='sandrop-'+room.id;
+  smallQR();
   if(room.fail)status('Auto mode nahi chala, QR se connect karo');
   becomeHub();
+  setTimeout(()=>{if(!peer)status('Server se connect nahi ho paa raha (PeerJS). Page refresh karo ya doosra network try karo.')},12000);
 })();
 </script>
 </body>
