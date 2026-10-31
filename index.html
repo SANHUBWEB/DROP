@@ -5,60 +5,89 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>SanDrop - File aur Text Share</title>
 <style>
-:root{--bg:#eef3f8;--card:#fff;--ink:#12233b;--mute:#5d6f88;--line:#d3dde9;--acc:#2f6bff;--ok:#1fa67a;color-scheme:light}
-@media(prefers-color-scheme:dark){:root{--bg:#0f1a2b;--card:#17263d;--ink:#e8eef7;--mute:#92a4bf;--line:#26385a;--acc:#5b8cff;--ok:#3cc79a;color-scheme:dark}}
-*{box-sizing:border-box}
+:root{--bg:#eef3f8;--card:#fff;--ink:#12233b;--mute:#5d6f88;--line:#d3dde9;--acc:#2f6bff;--ok:#1fa67a;--bad:#d64545;color-scheme:light}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1a2b;--card:#17263d;--ink:#e8eef7;--mute:#92a4bf;--line:#26385a;--acc:#5b8cff;--ok:#3cc79a;--bad:#ff7b7b;color-scheme:dark}}
+*{box-sizing:border-box}[hidden]{display:none!important}
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font:16px/1.5 "Avenir Next","Segoe UI",system-ui,sans-serif;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0);min-height:100vh}
 .wrap{max-width:720px;margin:0 auto;padding:20px 16px 40px}
 h1{font-size:26px;margin:0;letter-spacing:-.02em}
 .top{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.top small{color:var(--mute)}
-.radar{position:relative;height:190px;margin:10px 0;display:grid;place-items:center;overflow:hidden}
+.mute,.top small{color:var(--mute);font-size:14px}
+.radar{position:relative;height:170px;margin:6px 0;display:grid;place-items:center;overflow:hidden}
 .radar i{position:absolute;border:1.5px solid var(--acc);border-radius:50%;opacity:.25;animation:p 3.2s ease-out infinite}
-.radar i:nth-child(1){width:70px;height:70px}.radar i:nth-child(2){width:140px;height:140px;animation-delay:.6s}.radar i:nth-child(3){width:210px;height:210px;animation-delay:1.2s}.radar i:nth-child(4){width:280px;height:280px;animation-delay:1.8s}
+.radar i:nth-child(1){width:70px;height:70px}.radar i:nth-child(2){width:130px;height:130px;animation-delay:.6s}.radar i:nth-child(3){width:190px;height:190px;animation-delay:1.2s}.radar i:nth-child(4){width:260px;height:260px;animation-delay:1.8s}
 @keyframes p{0%{opacity:.5}100%{opacity:0}}
 @media(prefers-reduced-motion:reduce){.radar i{animation:none}}
-.me{position:relative;z-index:1;text-align:center;background:var(--card);border:1px solid var(--line);border-radius:50%;width:92px;height:92px;display:grid;place-items:center;font-size:13px;font-weight:600;padding:8px;line-height:1.2}
-#st{text-align:center;color:var(--mute);font-size:14px;margin:0 0 14px}
+.me{position:relative;z-index:1;text-align:center;background:var(--card);border:1px solid var(--line);border-radius:50%;width:92px;height:92px;display:grid;place-items:center;font-size:13px;font-weight:600;padding:8px;line-height:1.2;cursor:pointer}
+#st{text-align:center;color:var(--mute);font-size:14px;margin:0 0 12px}
+.qb{display:flex;align-items:center;justify-content:center;gap:14px;margin:0 0 14px;color:var(--mute);font-size:13px}.qb p{margin:0;max-width:180px}
+#qrs svg{width:112px;height:112px;background:#fff;padding:6px;border-radius:10px;display:block}
+.tabs{display:flex;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:14px}
+.tabs button{background:transparent;color:var(--mute);padding:9px 6px}.tabs button.on{background:var(--acc);color:#fff}
+#bd:not(:empty){background:var(--bad);color:#fff;border-radius:9px;padding:0 6px;margin-left:5px;font-size:12px}
 #peers{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
 .peer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
 .peer b{display:block;font-size:17px}.peer span{color:var(--mute);font-size:13px}
-.row{display:flex;gap:8px;margin-top:12px}
+.vc{display:inline-block;margin-top:6px;font-size:13px;color:var(--ok);font-weight:700;letter-spacing:.08em}
+.row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
 button,.btn{font:inherit;font-weight:600;border:0;border-radius:10px;padding:10px 14px;background:var(--acc);color:#fff;cursor:pointer;flex:1;text-align:center}
-button.g{background:transparent;color:var(--ink);border:1px solid var(--line);flex:none}
-button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
-.bar{display:flex;gap:8px;justify-content:center;margin:18px 0}
-h2{font-size:17px;margin:26px 0 8px}
+button.g{background:transparent;color:var(--ink);border:1px solid var(--line)}
+button:focus-visible,input:focus-visible,textarea:focus-visible,.me:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.bar{display:flex;gap:8px;margin:16px 0}.bar button{flex:1;min-width:120px}
+h2{font-size:16px;margin:22px 0 8px}
 .it{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:8px;word-break:break-word}
-.hd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}.hd b{color:var(--acc)}.me{cursor:pointer}
-.it small{color:var(--mute);display:block}
-.it a{color:var(--acc);font-weight:600}
-.pr{height:6px;background:var(--line);border-radius:3px;margin-top:8px;overflow:hidden}.pr div{height:100%;width:0;background:var(--ok);transition:width .15s}
+.hd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}.hd b{color:var(--acc)}.it small{color:var(--mute)}
+.it a{color:var(--acc);font-weight:600;margin-right:12px}.bx{margin-top:8px}
+.pr{height:6px;background:var(--line);border-radius:3px;overflow:hidden}.pr div{height:100%;width:0;background:var(--ok);transition:width .15s}
+.aa{display:flex;gap:8px;align-items:center;font-size:14px;margin-bottom:12px}
+input[type=text],input[type=search],input:not([type]),#ci{width:100%;font:inherit;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.fr{display:flex;gap:12px}.fm{flex:1;min-width:0}.fm small{display:block}.fm .row{margin-top:6px;align-items:center}.fm .row button{flex:none;padding:5px 10px}
+.th{width:54px;height:54px;border-radius:10px;object-fit:cover;flex:none;background:var(--line)}.ic{display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--acc)}
 dialog{border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--ink);max-width:340px;width:calc(100% - 32px);padding:18px}
 dialog::backdrop{background:rgba(8,16,30,.55)}
 textarea{width:100%;height:130px;font:inherit;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:10px}
 #qr svg{width:100%;height:auto;background:#fff;padding:10px;border-radius:12px}
-.qb{display:flex;align-items:center;justify-content:center;gap:14px;margin:0 0 16px;color:var(--mute);font-size:13px}.qb p{margin:0;max-width:170px}#qrs svg{width:112px;height:112px;background:#fff;padding:6px;border-radius:10px;display:block}
 #qrl{font-size:12px;word-break:break-all;color:var(--mute)}
+#od{max-width:420px}#oq svg{width:100%;height:auto;background:#fff;padding:10px;border-radius:12px;display:block;margin-top:8px}
 video{width:100%;border-radius:12px;background:#000}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="top"><div><h1>SanDrop</h1><small>Windows, iOS, Android ke beech file aur text bhejo</small></div><button class="g" id="auto" title="Same WiFi auto mode">Auto</button></div>
-  <div class="radar"><i></i><i></i><i></i><i></i><div class="me" id="me">...</div></div>
+  <div class="top"><div><h1>SanDrop</h1><small>Windows, iOS, Android ke beech file aur text bhejo</small></div><button class="g" id="auto" style="flex:none" title="Same WiFi auto mode">Auto</button></div>
+  <div class="radar"><i></i><i></i><i></i><i></i><div class="me" id="me" tabindex="0" role="button">...</div></div>
   <p id="st">Connect ho raha hai...</p>
   <div class="qb"><div id="qrs"></div><p id="qh">Doosre device se ye QR scan karo</p></div>
-  <div id="peers"></div>
-  <div class="bar"><button id="qrBtn" style="flex:none">QR dikhao</button><button id="scanBtn" class="g">QR scan karo</button></div>
-  <h2>Mila hua (bhejne wale ka naam ke saath)</h2>
-  <div id="inbox"><p style="color:var(--mute);margin:0">Abhi kuch nahi aaya. Doosre device par SanDrop kholo, wo yahan dikhega.</p></div>
+  <nav class="tabs"><button class="on" data-v="send">Bhejo</button><button data-v="in">Mila hua<span id="bd"></span></button><button data-v="fx">Files</button></nav>
+
+  <section id="v-send">
+    <div id="peers"></div>
+    <div class="bar"><button id="qrBtn">QR dikhao</button><button id="scanBtn" class="g">QR scan karo</button><button id="codeBtn" class="g">Code se connect</button><button id="offBtn" class="g">Offline connect</button></div>
+    <h2>Bheja hua</h2><div id="sent"><p class="mute" style="margin:0">Abhi kuch nahi bheja.</p></div>
+  </section>
+
+  <section id="v-in" hidden>
+    <label class="aa"><input type="checkbox" id="aa"> Files apne-aap accept karo</label>
+    <div id="inbox"><p class="mute" style="margin:0">Abhi kuch nahi aaya. File aane par yahan Accept ya Reject ka option dikhega.</p></div>
+  </section>
+
+  <section id="v-fx" hidden>
+    <input type="search" id="fq" placeholder="File dhundo...">
+    <p class="mute" id="fs" style="margin:8px 0"></p>
+    <div id="fx"></div>
+  </section>
 </div>
 
 <dialog id="qd"><div id="qr"></div><p id="qrl"></p><div class="row"><button class="g" id="cp">Link copy</button><button id="qx">Band</button></div></dialog>
-<dialog id="sd"><video id="vid" playsinline muted></video><p id="sst" style="color:var(--mute);font-size:14px">Doosre device ka QR camera ke saamne rakho</p><button id="sx" style="width:100%">Band</button></dialog>
+<dialog id="sd"><video id="vid" playsinline muted></video><p class="mute">Doosre device ka QR camera ke saamne rakho</p><button id="sx" style="width:100%">Band</button></dialog>
 <dialog id="td"><h3 style="margin-top:0" id="tt">Text bhejo</h3><textarea id="tx" placeholder="Yahan likho ya paste karo"></textarea><div class="row"><button class="g" id="tc">Cancel</button><button id="ts">Bhejo</button></div></dialog>
+<dialog id="cd"><h3 style="margin-top:0">Code se connect</h3><p class="mute">Ek device par naya code banao, doosre par wahi code daalo.</p><button id="cg" style="width:100%">Naya code banao</button><p class="mute" style="margin:14px 0 6px">Ya doosre device ka code daalo</p><input id="ci" inputmode="numeric" maxlength="6" placeholder="6 digit code"><div class="row"><button class="g" id="cx">Band</button><button id="cj">Join</button></div></dialog>
+<dialog id="od"><h3 style="margin-top:0">Offline connect (bina internet)</h3>
+<p class="mute" id="ot">Dono devices ek hi WiFi ya hotspot par hon. Ek par "Shuru karo", doosre par "Scan karo".</p>
+<div id="oq"></div>
+<div class="row" id="ob"><button id="o1">1. Shuru karo (QR banao)</button><button class="g" id="o2">Doosre ka QR scan karo</button><button id="o3" hidden>Jawab ka QR scan karo</button></div>
+<div class="row"><button class="g" id="ox">Band</button></div></dialog>
 <input type="file" id="fi" multiple hidden>
 
 <script>
@@ -68,15 +97,29 @@ const LIB={
 peer:['https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js','https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js','https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js'],
 qr:['https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js','https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js','https://unpkg.com/qrcode-generator@1.4.4/qrcode.js'],
 jsqr:['https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js','https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js','https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js','https://unpkg.com/jsqr@1.4.0/dist/jsQR.js']};
-window.onerror=(m)=>{const e=document.getElementById('st');if(e)e.textContent='Error: '+m};
+// STUN + free public TURN fallback (hotspot / strict networks)
+const CFG={config:{iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'},
+ {urls:'turn:openrelay.metered.ca:80',username:'openrelayproject',credential:'openrelayproject'},
+ {urls:'turn:openrelay.metered.ca:443?transport=tcp',username:'openrelayproject',credential:'openrelayproject'}]}};
+window.onerror=m=>{const e=$('#st');if(e)e.textContent='Error: '+m};
+
 const A=['Red','Blue','Green','Gold','Pink','Cyan','Lime','Gray'],B=['Fox','Owl','Cat','Bat','Elk','Ant','Yak','Emu'];
 let myName;try{myName=localStorage.sd_name}catch(e){}
 if(!myName){myName=A[Math.random()*8|0]+' '+B[Math.random()*8|0];try{localStorage.sd_name=myName}catch(e){}}
-const ua=navigator.userAgent;
-const os=/iPhone|iPad|iPod/.test(ua)?'iPhone/iPad':/Android/.test(ua)?'Android':/Windows/.test(ua)?'Windows':/Mac/.test(ua)?'Mac':/Linux/.test(ua)?'Linux':'Device';
+const os=/iPhone|iPad|iPod/.test(navigator.userAgent)?'iPhone/iPad':/Android/.test(navigator.userAgent)?'Android':/Windows/.test(navigator.userAgent)?'Windows':/Mac/.test(navigator.userAgent)?'Mac':'Device';
 $('#me').textContent=myName;
 
-let room,hubId,peer,me,hubP,conns={},info={},rx={},target=null;
+const perr=e=>status(['network','server-error','socket-error','socket-closed'].includes(e.type)?'Internet ya server nahi mila. Internet nahi hai to "Offline connect" use karo.':'Error: '+e.type);
+const fmt=n=>n<1024?n+' B':n<1048576?(n/1024).toFixed(1)+' KB':n<1073741824?(n/1048576).toFixed(1)+' MB':(n/1073741824).toFixed(2)+' GB';
+const off={};
+function vcode(id){const s=off[id]?id:[me,id].sort().join('|');let h=7;for(const ch of s)h=(h*31+ch.charCodeAt(0))>>>0;return String(h%10000).padStart(4,'0')}
+
+// saved files (file explorer) in IndexedDB
+const DB=new Promise(res=>{try{const r=indexedDB.open('sandrop',1);r.onupgradeneeded=()=>r.result.createObjectStore('f',{keyPath:'id'});r.onsuccess=()=>res(r.result);r.onerror=()=>res(null)}catch(e){res(null)}});
+async function dbp(mode,fn){const d=await DB;if(!d)return null;return new Promise(r=>{try{const t=d.transaction('f',mode),q=fn(t.objectStore('f'));t.oncomplete=()=>r(q&&q.result);t.onerror=()=>r(null)}catch(e){r(null)}})}
+const saveF=x=>dbp('readwrite',s=>s.put(x)),allF=()=>dbp('readonly',s=>s.getAll()),delF=id=>dbp('readwrite',s=>s.delete(id));
+
+let room,hubId,peer,me,hubP,conns={},info={},rx={},pend={},target=null,unread=0;
 
 async function getRoom(){
   const m=location.hash.match(/r=([\w-]+)/);
@@ -92,103 +135,148 @@ function setup(c){
   c.on('open',()=>{conns[c.peer]=c;c.send({t:'hi',name:myName,os})});
   c.on('data',d=>handle(c,d));
   const gone=()=>{if(conns[c.peer]===c){delete conns[c.peer];delete info[c.peer];render()}if(c.peer===hubId&&me!==hubId)claimHub()};
-  c.on('close',gone);c.on('error',gone);
+  c.on('close',gone);c.on('error',e=>{status('Connection error: '+(e.type||e.message||e));gone()});
 }
 function dial(id,j){if(id===me||conns[id])return;setup(peer.connect(id,{metadata:{j:!!j},reliable:true}))}
 function list(except){return[me,...Object.keys(conns).filter(k=>k!==except)]}
 function handle(c,d){
-  if(d.t==='hi'){info[c.peer]={name:d.name,os:d.os};render();
-    if(c.metadata&&c.metadata.j)c.send({t:'peers',list:list(c.peer)})}
+  const from=(info[c.peer]||{}).name;
+  if(d.t==='hi'){info[c.peer]={name:d.name,os:d.os};render();if(c.metadata&&c.metadata.j)c.send({t:'peers',list:list(c.peer)})}
   else if(d.t==='peers'){d.list.forEach(id=>dial(id,false))}
-  else if(d.t==='text'){add({text:d.text,from:(info[c.peer]||{}).name})}
-  else if(d.t==='m'){rx[d.id]={name:d.name,size:d.size,got:0,parts:[],type:d.type,el:add({file:d.name,from:(info[c.peer]||{}).name,prog:true})}}
-  else if(d.t==='c'){const r=rx[d.id];if(!r)return;r.parts.push(d.b);r.got+=d.b.byteLength;
-    r.el.querySelector('.pr div').style.width=(r.got/r.size*100)+'%';
-    if(r.got>=r.size){const u=URL.createObjectURL(new Blob(r.parts,{type:r.type}));
-      r.el.querySelector('.pr').outerHTML='<a href="'+u+'" download="'+r.name.replace(/"/g,'')+'">Download karo</a>';delete rx[d.id]}}
+  else if(d.t==='text'){add({text:d.text,from});note()}
+  else if(d.t==='m'){offer(c,d,from)}
+  else if(d.t==='ok'||d.t==='no'){const p=pend[d.id];if(p){delete pend[d.id];p(d.t==='ok')}}
+  else if(d.t==='c'){const r=rx[d.id];if(!r||!r.acc)return;r.parts.push(d.b);r.got+=d.b.byteLength;
+    const pb=r.el.querySelector('.pr div');if(pb)pb.style.width=(r.got/r.size*100)+'%';
+    if(r.got>=r.size)finish(d.id)}
 }
-function hubRole(p){
-  p.on('connection',c=>{c.on('open',()=>{if(p===hubP){c.send({t:'peers',list:list(),rv:1});setTimeout(()=>c.close(),600)}})});
+function offer(c,d,from){
+  const r=rx[d.id]={name:d.name,size:d.size,type:d.type,got:0,parts:[],from,acc:false};
+  r.el=add({file:d.name,from,size:d.size});const bx=r.el.querySelector('.bx');
+  const acc=()=>{r.acc=true;bx.innerHTML='<div class="pr"><div></div></div>';c.send({t:'ok',id:d.id})};
+  const rej=()=>{c.send({t:'no',id:d.id});bx.textContent='Reject kar diya';delete rx[d.id]};
+  if($('#aa').checked)acc();
+  else{bx.innerHTML='<div class="row" style="margin-top:0"><button>Accept</button><button class="g">Reject</button></div>';bx.querySelectorAll('button')[0].onclick=acc;bx.querySelectorAll('button')[1].onclick=rej}
+  show('in');
+}
+async function finish(id){
+  const r=rx[id];delete rx[id];
+  const blob=new Blob(r.parts,{type:r.type}),u=URL.createObjectURL(blob),bx=r.el.querySelector('.bx');
+  bx.innerHTML='';
+  const a=document.createElement('a');a.href=u;a.download=r.name;a.textContent='Download karo';bx.appendChild(a);
+  const sp=document.createElement('span');sp.style.color='var(--ok)';sp.textContent='Files tab mein save ho gayi';bx.appendChild(sp);
+  await saveF({id,name:r.name,size:r.size,type:r.type,from:r.from||'Device',t:Date.now(),blob});
 }
 function claimHub(){
   if(hubP||!peer)return;
-  const p=new Peer(hubId);
-  p.on('open',()=>{hubP=p;p.on('connection',c=>{
-    c.on('open',()=>{c.send({t:'peers',list:list(),rv:1});setTimeout(()=>c.close(),600)})})});
+  const p=new Peer(hubId,CFG);
+  p.on('open',()=>{hubP=p;p.on('connection',c=>{c.on('open',()=>{c.send({t:'peers',list:list(),rv:1});setTimeout(()=>c.close(),600)})})});
   p.on('error',()=>{try{p.destroy()}catch(e){}});
 }
 function join(){
-  const p=new Peer();
-  p.on('open',id=>{peer=p;me=id;p.on('connection',setup);dial(hubId,true);ready()});
-  p.on('error',e=>status('Error: '+e.type));
+  const p=new Peer(undefined,CFG);
+  p.on('open',id=>{peer=p;me=id;p.on('connection',setup);dial(hubId,true);render()});
+  p.on('error',perr);
   p.on('disconnected',()=>{try{p.reconnect()}catch(e){}});
 }
 function becomeHub(){
-  const p=new Peer(hubId);
-  p.on('open',id=>{peer=p;me=id;p.on('connection',setup);ready()});
-  p.on('error',e=>{if(e.type==='unavailable-id'){try{p.destroy()}catch(x){}join()}else status('Error: '+e.type)});
+  const p=new Peer(hubId,CFG);
+  p.on('open',id=>{peer=p;me=id;p.on('connection',setup);render()});
+  p.on('error',e=>{if(e.type==='unavailable-id'){try{p.destroy()}catch(x){}join()}else perr(e)});
   p.on('disconnected',()=>{try{p.reconnect()}catch(e){}});
 }
-function ready(){render()}
 function render(){
-  const ids=Object.keys(info),box=$('#peers');
-  box.innerHTML='';
+  const ids=Object.keys(info),box=$('#peers');box.innerHTML='';
   ids.forEach(id=>{
     const p=info[id],d=document.createElement('div');d.className='peer';
-    d.innerHTML='<b></b><span></span><div class="row"><button data-a="f">File</button><button class="g" data-a="t">Text</button></div>';
+    d.innerHTML='<b></b><span></span><br><span class="vc"></span><div class="row"><button data-a="f">File bhejo</button><button class="g" data-a="t">Text</button></div>';
     d.querySelector('b').textContent=p.name;d.querySelector('span').textContent=p.os;
+    d.querySelector('.vc').textContent='Verify code: '+vcode(id);
     d.querySelector('[data-a=f]').onclick=()=>{target=id;$('#fi').click()};
     d.querySelector('[data-a=t]').onclick=()=>{target=id;$('#tt').textContent='Text bhejo: '+p.name;$('#tx').value='';$('#td').showModal()};
     box.appendChild(d);
   });
-  status(ids.length?ids.length+' device connected - file ya text bhejo':(room&&room.auto?'Same WiFi par doosra device dhundh rahe hain... doosre device par bhi SanDrop kholo':'Room mein doosre device ka intezar... QR scan karwao'));
+  status(ids.length?ids.length+' device connected. Dono par Verify code same ho to bhejo.':(room&&room.auto?'Same WiFi par doosra device dhundh rahe hain... doosre device par bhi SanDrop kholo':'Room mein doosre device ka intezar... QR scan karwao ya code daalo'));
 }
-function add(o){
-  const inbox=$('#inbox');if(!inbox.querySelector('.it'))inbox.innerHTML='';
+function add(o,box){
+  box=box||$('#inbox');const e=box.querySelector('.mute');if(e)e.remove();
   const el=document.createElement('div');el.className='it';
-  const h=document.createElement('div');h.className='hd';const sn=document.createElement('b');sn.textContent=o.from||'Device';const tm=document.createElement('small');tm.textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});h.append(sn,tm);el.appendChild(h);
-  if(o.file){const fl=document.createElement('div');fl.textContent=o.file;el.appendChild(fl)}
+  const h=document.createElement('div');h.className='hd';
+  const sn=document.createElement('b');sn.textContent=o.from||'Device';
+  const tm=document.createElement('small');tm.textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  h.append(sn,tm);el.appendChild(h);
+  if(o.file){const fl=document.createElement('div');fl.textContent=o.file+(o.size?'  ('+fmt(o.size)+')':'');el.appendChild(fl)}
   if(o.text){const t=document.createElement('div');t.textContent=o.text;el.appendChild(t);
-    const b=document.createElement('button');b.className='g';b.style.marginTop='8px';b.textContent='Copy';
+    const b=document.createElement('button');b.className='g';b.style.cssText='margin-top:8px;flex:none';b.textContent='Copy';
     b.onclick=()=>navigator.clipboard.writeText(o.text).then(()=>b.textContent='Copy ho gaya');el.appendChild(b);
-    if(/^https?:\/\//.test(o.text.trim())){const a=document.createElement('a');a.href=o.text.trim();a.target='_blank';a.rel='noopener';a.textContent=' Kholo';a.style.marginLeft='10px';el.appendChild(a)}}
-  if(o.prog)el.insertAdjacentHTML('beforeend','<div class="pr"><div></div></div>');
-  inbox.prepend(el);return el;
+    if(/^https?:\/\//.test(o.text.trim())){const a=document.createElement('a');a.href=o.text.trim();a.target='_blank';a.rel='noopener';a.textContent='Kholo';a.style.marginLeft='10px';el.appendChild(a)}}
+  const bx=document.createElement('div');bx.className='bx';el.appendChild(bx);
+  box.prepend(el);return el;
 }
-// send
-$('#ts').onclick=()=>{const v=$('#tx').value;if(v&&conns[target]){conns[target].send({t:'text',text:v})}$('#td').close()};
+function note(){if($('#v-in').hidden){unread++;$('#bd').textContent=unread}}
+// tabs
+function show(v){['send','in','fx'].forEach(k=>{$('#v-'+k).hidden=k!==v;document.querySelector('[data-v='+k+']').classList.toggle('on',k===v)});if(v==='in'){unread=0;$('#bd').textContent=''}if(v==='fx')renderFx()}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+// file explorer
+async function renderFx(){
+  const q=($('#fq').value||'').toLowerCase(),box=$('#fx');
+  const l=((await allF())||[]).filter(f=>f.name.toLowerCase().includes(q)).sort((a,b)=>b.t-a.t);
+  box.innerHTML='';$('#fs').textContent=l.length+' file, '+fmt(l.reduce((s,f)=>s+f.size,0));
+  if(!l.length){box.innerHTML='<p class="mute">Abhi koi received file nahi hai.</p>';return}
+  l.forEach(f=>{
+    const u=URL.createObjectURL(f.blob),d=document.createElement('div');d.className='it fr';
+    const img=/^image\//.test(f.type),th=document.createElement(img?'img':'div');th.classList.add('th');
+    if(img)th.src=u;else{th.classList.add('ic');th.textContent=((f.name.split('.').pop()||'file').slice(0,4)).toUpperCase()}
+    const m=document.createElement('div');m.className='fm';
+    const n=document.createElement('b');n.textContent=f.name;
+    const s=document.createElement('small');s.textContent=fmt(f.size)+' - '+f.from+' - '+new Date(f.t).toLocaleString();
+    const ac=document.createElement('div');ac.className='row';
+    const o=document.createElement('a');o.href=u;o.target='_blank';o.rel='noopener';o.textContent='Kholo';
+    const dl=document.createElement('a');dl.href=u;dl.download=f.name;dl.textContent='Download';
+    const x=document.createElement('button');x.className='g';x.textContent='Delete';
+    x.onclick=async()=>{if(confirm('Ye file delete karein?')){await delF(f.id);renderFx()}};
+    ac.append(o,dl,x);m.append(n,s,ac);d.append(th,m);box.appendChild(d);
+  });
+}
+$('#fq').oninput=renderFx;
+// send text
+$('#ts').onclick=()=>{const v=$('#tx').value;if(v&&conns[target]){conns[target].send({t:'text',text:v});add({text:v,from:'Aap → '+(info[target]||{}).name},$('#sent'))}$('#td').close()};
 $('#tc').onclick=()=>$('#td').close();
+// send file (needs the other side to Accept)
 $('#fi').onchange=async e=>{
-  const c=conns[target];if(!c)return;
-  for(const f of e.target.files){
-    const id=Math.random().toString(36).slice(2),el=add({file:f.name,from:'Aap → '+(info[target]||{}).name,prog:true});
-    c.send({t:'m',id,name:f.name,size:f.size,type:f.type});
-    const S=131072;
+  const c=conns[target],to=(info[target]||{}).name,files=[...e.target.files];e.target.value='';
+  if(!c)return;
+  for(const f of files){
+    const id=Math.random().toString(36).slice(2),el=add({file:f.name,size:f.size,from:'Aap → '+to},$('#sent')),bx=el.querySelector('.bx');
+    bx.textContent='Samne wale ke Accept karne ka intezar...';
+    const okk=await new Promise(res=>{pend[id]=res;c.send({t:'m',id,name:f.name,size:f.size,type:f.type});setTimeout(()=>{if(pend[id]){delete pend[id];res(false)}},120000)});
+    if(!okk){bx.textContent='Reject hua ya jawab nahi aaya';continue}
+    try{
+    bx.innerHTML='<div class="pr"><div></div></div>';const pb=bx.querySelector('.pr div');
+    const S=c.chunk||131072;
     for(let o=0;o<f.size;o+=S){
       c.send({t:'c',id,b:await f.slice(o,o+S).arrayBuffer()});
-      el.querySelector('.pr div').style.width=(Math.min(o+S,f.size)/f.size*100)+'%';
+      pb.style.width=(Math.min(o+S,f.size)/f.size*100)+'%';
       while(c.dataChannel&&c.dataChannel.bufferedAmount>2e6)await new Promise(r=>setTimeout(r,25));
     }
-    el.querySelector('.pr').outerHTML='<span style="color:var(--ok);font-weight:600">Bhej diya</span>';
+    bx.innerHTML='<span style="color:var(--ok);font-weight:600">Bhej diya</span>';
+    }catch(err){bx.textContent='Error: '+(err.message||err)}
   }
-  e.target.value='';
 };
-// drag and drop on page when exactly one peer
 addEventListener('dragover',e=>e.preventDefault());
 addEventListener('drop',e=>{e.preventDefault();const ids=Object.keys(info);if(ids.length===1&&e.dataTransfer.files.length){target=ids[0];$('#fi').files=e.dataTransfer.files;$('#fi').onchange({target:$('#fi')})}});
-// QR show
+// QR
 function link(){return location.origin+location.pathname+'#r='+room.id}
-function mkqr(cell){const q=qrcode(0,'M');q.addData(link());q.make();return q.createSvgTag(cell,0)}
+function mkqr(cell,t){const q=qrcode(0,t?'L':'M');q.addData(t||link());q.make();return q.createSvgTag(cell,0)}
 async function smallQR(){try{if(typeof qrcode==='undefined')await load(LIB.qr);$('#qrs').innerHTML=mkqr(3)}catch(e){$('#qh').textContent='QR load nahi hua, internet check karo'}}
 $('#qrBtn').onclick=async()=>{
-  try{if(typeof qrcode==='undefined')await load(LIB.qr);$('#qr').innerHTML=mkqr(5);}catch(e){$('#qr').textContent='QR load nahi hua'}
+  try{if(typeof qrcode==='undefined')await load(LIB.qr);$('#qr').innerHTML=mkqr(5)}catch(e){$('#qr').textContent='QR load nahi hua'}
   $('#qrl').textContent=link();$('#qd').showModal();
 };
 $('#cp').onclick=()=>navigator.clipboard.writeText(link()).then(()=>$('#cp').textContent='Copy ho gaya');
 $('#qx').onclick=()=>$('#qd').close();
-// QR scan
 let stream,scanning=false;
-$('#scanBtn').onclick=async()=>{
+async function startScan(cb){
   try{
     if(typeof jsQR==='undefined')await load(LIB.jsqr);
     stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
@@ -198,26 +286,91 @@ $('#scanBtn').onclick=async()=>{
       if(!scanning)return;
       if(v.videoWidth){cv.width=v.videoWidth;cv.height=v.videoHeight;cx.drawImage(v,0,0);
         const r=jsQR(cx.getImageData(0,0,cv.width,cv.height).data,cv.width,cv.height);
-        if(r){const m=r.data.match(/r=([\w-]+)/);if(m){stopScan();location.hash='r='+m[1];location.reload();return}}}
+        if(r&&cb(r.data)){stopScan();return}}
       requestAnimationFrame(loop);
     })();
-  }catch(e){alert('Camera allow karo ya phone ke camera app se QR scan karo.')}
-};
-function stopScan(){scanning=false;if(stream)stream.getTracks().forEach(t=>t.stop());$('#sd').close()}
+  }catch(e){alert('Camera allow karo. Scanner library na mile to site ek baar internet par kholo taaki wo save ho jaye.')}
+}
+function stopScan(){scanning=false;if(stream)stream.getTracks().forEach(t=>t.stop());if($('#sd').open)$('#sd').close()}
+$('#scanBtn').onclick=()=>startScan(t=>{const m=t.match(/r=([\w-]+)/);if(m){location.hash='r='+m[1];location.reload();return true}return false});
 $('#sx').onclick=stopScan;
+// code connect
+function goCode(c){location.hash='r=k'+c;location.reload()}
+$('#codeBtn').onclick=()=>{$('#ci').value='';$('#cd').showModal()};
+$('#cg').onclick=()=>goCode(String(100000+Math.floor(Math.random()*900000)));
+$('#cj').onclick=()=>{const v=$('#ci').value.trim();if(/^\d{6}$/.test(v))goCode(v);else $('#ci').focus()};
+$('#cx').onclick=()=>$('#cd').close();
 $('#auto').onclick=()=>{history.replaceState(null,'',location.pathname);location.reload()};
-$('#me').title='Naam badalne ke liye dabao';
 $('#me').onclick=()=>{const n=prompt('Apna naam likho',myName);if(n&&n.trim()){myName=n.trim().slice(0,20);try{localStorage.sd_name=myName}catch(e){}$('#me').textContent=myName;Object.values(conns).forEach(c=>c.send({t:'hi',name:myName,os}))}};
+// ---- offline connect (no internet, manual QR handshake over local WiFi/hotspot) ----
+async function pack(o){
+  const j=new TextEncoder().encode(JSON.stringify(o)),z=!!window.CompressionStream;let b=j;
+  if(z)b=new Uint8Array(await new Response(new Blob([j]).stream().pipeThrough(new CompressionStream('deflate-raw'))).arrayBuffer());
+  let t='';b.forEach(x=>t+=String.fromCharCode(x));return 'SD1'+(z?'z':'r')+btoa(t);
+}
+async function unpack(t){
+  const m=t.trim().match(/^SD1([zr])([A-Za-z0-9+/=]+)$/);if(!m)throw new Error('bad');
+  let b=Uint8Array.from(atob(m[2]),c=>c.charCodeAt(0));
+  if(m[1]==='z')b=new Uint8Array(await new Response(new Blob([b]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer());
+  return JSON.parse(new TextDecoder().decode(b));
+}
+function LC(dc,tok){
+  const h={},c={peer:tok,metadata:{},dataChannel:dc,chunk:60000,
+    on(e,f){(h[e]=h[e]||[]).push(f);return c},
+    emit(e,x){(h[e]||[]).forEach(f=>f(x))},
+    send(o){if(o.t==='c'){const id=new TextEncoder().encode(o.id),p=new Uint8Array(o.b),m=new Uint8Array(2+id.length+p.length);m[0]=1;m[1]=id.length;m.set(id,2);m.set(p,2+id.length);dc.send(m.buffer)}else dc.send(JSON.stringify(o))},
+    close(){try{dc.close()}catch(e){}}};
+  dc.binaryType='arraybuffer';
+  dc.onopen=()=>c.emit('open');dc.onclose=()=>c.emit('close');dc.onerror=()=>c.emit('error',{type:'offline-link'});
+  dc.onmessage=ev=>{if(typeof ev.data==='string')c.emit('data',JSON.parse(ev.data));else{const u=new Uint8Array(ev.data),n=u[1];c.emit('data',{t:'c',id:new TextDecoder().decode(u.slice(2,2+n)),b:u.slice(2+n).buffer})}};
+  setup(c);
+  c.on('open',()=>{stopScan();if($('#od').open)$('#od').close();show('send')});
+  if(dc.readyState==='open')setTimeout(()=>c.emit('open'));
+  return c;
+}
+let opc,otok;
+async function gather(pc){
+  if(pc.iceGatheringState==='complete')return;
+  await new Promise(r=>{const t=setTimeout(r,3500);pc.addEventListener('icegatheringstatechange',()=>{if(pc.iceGatheringState==='complete'){clearTimeout(t);r()}})});
+}
+async function camPerm(){try{(await navigator.mediaDevices.getUserMedia({video:true})).getTracks().forEach(t=>t.stop())}catch(e){}}
+async function showQ(t,msg){
+  window._last=t;$('#ot').textContent=msg;
+  try{if(typeof qrcode==='undefined')await load(LIB.qr);$('#oq').innerHTML=mkqr(4,t)}catch(e){$('#oq').textContent='QR library nahi mili. Site ek baar internet par kholo taaki wo save ho jaye.'}
+}
+async function offStart(){
+  await camPerm();otok=Math.random().toString(36).slice(2,10);off[otok]=1;
+  opc=new RTCPeerConnection({iceServers:[]});LC(opc.createDataChannel('sd'),otok);
+  await opc.setLocalDescription(await opc.createOffer());await gather(opc);
+  await showQ(await pack({k:'o',s:opc.localDescription.sdp,t:otok}),'Ye QR doosre device par scan karwao ("Doosre ka QR scan karo" se). Phir yahan "Jawab ka QR scan karo" dabao.');
+  $('#o3').hidden=false;
+}
+async function offJoin(txt){
+  const o=await unpack(txt);if(o.k!=='o')throw new Error('bad');
+  otok=o.t;off[otok]=1;opc=new RTCPeerConnection({iceServers:[]});opc.ondatachannel=e=>LC(e.channel,otok);
+  await opc.setRemoteDescription({type:'offer',sdp:o.s});await opc.setLocalDescription(await opc.createAnswer());await gather(opc);
+  await showQ(await pack({k:'a',s:opc.localDescription.sdp,t:otok}),'Ye QR pehle device par scan karwao (wahan "Jawab ka QR scan karo" dabake).');
+}
+async function offFinish(txt){const o=await unpack(txt);if(o.k!=='a'||o.t!==otok)throw new Error('bad');await opc.setRemoteDescription({type:'answer',sdp:o.s})}
+$('#offBtn').onclick=()=>{$('#oq').innerHTML='';$('#o3').hidden=true;$('#ot').textContent='Dono devices ek hi WiFi ya hotspot par hon. Ek par "Shuru karo", doosre par "Scan karo".';$('#od').showModal()};
+$('#o1').onclick=()=>offStart().catch(e=>$('#ot').textContent='Error: '+(e.message||e));
+$('#o2').onclick=()=>startScan(t=>{if(!t.startsWith('SD1'))return false;offJoin(t).catch(e=>$('#ot').textContent='QR sahi nahi tha, dobara scan karo');return true});
+$('#o3').onclick=()=>startScan(t=>{if(!t.startsWith('SD1'))return false;offFinish(t).catch(e=>$('#ot').textContent='Ye is connection ka jawab nahi hai, dobara try karo');return true});
+$('#ox').onclick=()=>$('#od').close();
 // start
 (async()=>{
+  if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
   status('Library load ho rahi hai...');
-  try{await load(LIB.peer)}catch(e){status('PeerJS load nahi hua. Internet ya CDN block hai, VPN/DNS badal ke try karo.');return}
+  let ok=true;try{await load(LIB.peer)}catch(e){ok=false}
+  load(LIB.jsqr).catch(()=>{});
+  if(!ok){status('Internet nahi hai. Neeche "Offline connect" se jodo.');return}
   status('Network dhundh rahe hain...');
   room=await getRoom();hubId='sandrop-'+room.id;
   smallQR();
-  if(room.fail)status('Auto mode nahi chala, QR se connect karo');
+  if(/^k\d{6}$/.test(room.id))$('#qh').textContent='Code: '+room.id.slice(1)+'. Ye code doosre device par daalo ya QR scan karo';
+  if(room.fail)status('Auto mode nahi chala, QR ya code se connect karo');
   becomeHub();
-  setTimeout(()=>{if(!peer)status('Server se connect nahi ho paa raha (PeerJS). Page refresh karo ya doosra network try karo.')},12000);
+  setTimeout(()=>{if(!peer)status('Server se connect nahi ho paa raha. Internet nahi hai to "Offline connect" use karo.')},12000);
 })();
 </script>
 </body>
