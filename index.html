@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SanDrop - File aur Text Share</title>
+<style>
+:root{--bg:#eef3f8;--card:#fff;--ink:#12233b;--mute:#5d6f88;--line:#d3dde9;--acc:#2f6bff;--ok:#1fa67a;color-scheme:light}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1a2b;--card:#17263d;--ink:#e8eef7;--mute:#92a4bf;--line:#26385a;--acc:#5b8cff;--ok:#3cc79a;color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 "Avenir Next","Segoe UI",system-ui,sans-serif;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0);min-height:100vh}
+.wrap{max-width:720px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:26px;margin:0;letter-spacing:-.02em}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.top small{color:var(--mute)}
+.radar{position:relative;height:190px;margin:10px 0;display:grid;place-items:center;overflow:hidden}
+.radar i{position:absolute;border:1.5px solid var(--acc);border-radius:50%;opacity:.25;animation:p 3.2s ease-out infinite}
+.radar i:nth-child(1){width:70px;height:70px}.radar i:nth-child(2){width:140px;height:140px;animation-delay:.6s}.radar i:nth-child(3){width:210px;height:210px;animation-delay:1.2s}.radar i:nth-child(4){width:280px;height:280px;animation-delay:1.8s}
+@keyframes p{0%{opacity:.5}100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.radar i{animation:none}}
+.me{position:relative;z-index:1;text-align:center;background:var(--card);border:1px solid var(--line);border-radius:50%;width:92px;height:92px;display:grid;place-items:center;font-size:13px;font-weight:600;padding:8px;line-height:1.2}
+#st{text-align:center;color:var(--mute);font-size:14px;margin:0 0 14px}
+#peers{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.peer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.peer b{display:block;font-size:17px}.peer span{color:var(--mute);font-size:13px}
+.row{display:flex;gap:8px;margin-top:12px}
+button,.btn{font:inherit;font-weight:600;border:0;border-radius:10px;padding:10px 14px;background:var(--acc);color:#fff;cursor:pointer;flex:1;text-align:center}
+button.g{background:transparent;color:var(--ink);border:1px solid var(--line);flex:none}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.bar{display:flex;gap:8px;justify-content:center;margin:18px 0}
+h2{font-size:17px;margin:26px 0 8px}
+.it{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:8px;word-break:break-word}
+.it small{color:var(--mute);display:block}
+.it a{color:var(--acc);font-weight:600}
+.pr{height:6px;background:var(--line);border-radius:3px;margin-top:8px;overflow:hidden}.pr div{height:100%;width:0;background:var(--ok);transition:width .15s}
+dialog{border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--ink);max-width:340px;width:calc(100% - 32px);padding:18px}
+dialog::backdrop{background:rgba(8,16,30,.55)}
+textarea{width:100%;height:130px;font:inherit;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:10px}
+#qr svg{width:100%;height:auto;background:#fff;padding:10px;border-radius:12px}
+#qrl{font-size:12px;word-break:break-all;color:var(--mute)}
+video{width:100%;border-radius:12px;background:#000}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div><h1>SanDrop</h1><small>Windows, iOS, Android ke beech file aur text bhejo</small></div><button class="g" id="auto" title="Same WiFi auto mode">Auto</button></div>
+  <div class="radar"><i></i><i></i><i></i><i></i><div class="me" id="me">...</div></div>
+  <p id="st">Connect ho raha hai...</p>
+  <div id="peers"></div>
+  <div class="bar"><button id="qrBtn" style="flex:none">QR dikhao</button><button id="scanBtn" class="g">QR scan karo</button></div>
+  <h2>Mila hua</h2>
+  <div id="inbox"><p style="color:var(--mute);margin:0">Abhi kuch nahi aaya. Doosre device par SanDrop kholo, wo yahan dikhega.</p></div>
+</div>
+
+<dialog id="qd"><div id="qr"></div><p id="qrl"></p><div class="row"><button class="g" id="cp">Link copy</button><button id="qx">Band</button></div></dialog>
+<dialog id="sd"><video id="vid" playsinline muted></video><p id="sst" style="color:var(--mute);font-size:14px">Doosre device ka QR camera ke saamne rakho</p><button id="sx" style="width:100%">Band</button></dialog>
+<dialog id="td"><h3 style="margin-top:0" id="tt">Text bhejo</h3><textarea id="tx" placeholder="Yahan likho ya paste karo"></textarea><div class="row"><button class="g" id="tc">Cancel</button><button id="ts">Bhejo</button></div></dialog>
+<input type="file" id="fi" multiple hidden>
+
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const A=['Red','Blue','Green','Gold','Pink','Cyan','Lime','Gray'],B=['Fox','Owl','Cat','Bat','Elk','Ant','Yak','Emu'];
+let myName;try{myName=localStorage.sd_name}catch(e){}
+if(!myName){myName=A[Math.random()*8|0]+' '+B[Math.random()*8|0];try{localStorage.sd_name=myName}catch(e){}}
+const ua=navigator.userAgent;
+const os=/iPhone|iPad|iPod/.test(ua)?'iPhone/iPad':/Android/.test(ua)?'Android':/Windows/.test(ua)?'Windows':/Mac/.test(ua)?'Mac':/Linux/.test(ua)?'Linux':'Device';
+$('#me').textContent=myName;
+
+let room,hubId,peer,me,hubP,conns={},info={},rx={},target=null;
+
+async function getRoom(){
+  const m=location.hash.match(/r=([\w-]+)/);
+  if(m)return{id:m[1],auto:false};
+  try{
+    const ip=(await(await fetch('https://api.ipify.org?format=json',{signal:AbortSignal.timeout(4500)})).json()).ip;
+    const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('sandrop'+ip));
+    return{id:'n'+[...new Uint8Array(h)].slice(0,6).map(b=>b.toString(16).padStart(2,'0')).join(''),auto:true};
+  }catch(e){return{id:'p'+Math.random().toString(36).slice(2,8),auto:false,fail:true}}
+}
+function status(t){$('#st').textContent=t}
+function setup(c){
+  c.on('open',()=>{conns[c.peer]=c;c.send({t:'hi',name:myName,os})});
+  c.on('data',d=>handle(c,d));
+  const gone=()=>{if(conns[c.peer]===c){delete conns[c.peer];delete info[c.peer];render()}if(c.peer===hubId&&me!==hubId)claimHub()};
+  c.on('close',gone);c.on('error',gone);
+}
+function dial(id,j){if(id===me||conns[id])return;setup(peer.connect(id,{metadata:{j:!!j},reliable:true}))}
+function list(except){return[me,...Object.keys(conns).filter(k=>k!==except)]}
+function handle(c,d){
+  if(d.t==='hi'){info[c.peer]={name:d.name,os:d.os};render();
+    if(c.metadata&&c.metadata.j)c.send({t:'peers',list:list(c.peer)})}
+  else if(d.t==='peers'){d.list.forEach(id=>dial(id,false))}
+  else if(d.t==='text'){add({text:d.text,from:(info[c.peer]||{}).name})}
+  else if(d.t==='m'){rx[d.id]={name:d.name,size:d.size,got:0,parts:[],type:d.type,el:add({file:d.name,from:(info[c.peer]||{}).name,prog:true})}}
+  else if(d.t==='c'){const r=rx[d.id];if(!r)return;r.parts.push(d.b);r.got+=d.b.byteLength;
+    r.el.querySelector('.pr div').style.width=(r.got/r.size*100)+'%';
+    if(r.got>=r.size){const u=URL.createObjectURL(new Blob(r.parts,{type:r.type}));
+      r.el.querySelector('.pr').outerHTML='<a href="'+u+'" download="'+r.name.replace(/"/g,'')+'">Download karo</a>';delete rx[d.id]}}
+}
+function hubRole(p){
+  p.on('connection',c=>{c.on('open',()=>{if(p===hubP){c.send({t:'peers',list:list(),rv:1});setTimeout(()=>c.close(),600)}})});
+}
+function claimHub(){
+  if(hubP||!peer)return;
+  const p=new Peer(hubId);
+  p.on('open',()=>{hubP=p;p.on('connection',c=>{
+    c.on('open',()=>{c.send({t:'peers',list:list(),rv:1});setTimeout(()=>c.close(),600)})})});
+  p.on('error',()=>{try{p.destroy()}catch(e){}});
+}
+function join(){
+  const p=new Peer();
+  p.on('open',id=>{peer=p;me=id;p.on('connection',setup);dial(hubId,true);ready()});
+  p.on('error',e=>status('Error: '+e.type));
+  p.on('disconnected',()=>{try{p.reconnect()}catch(e){}});
+}
+function becomeHub(){
+  const p=new Peer(hubId);
+  p.on('open',id=>{peer=p;me=id;p.on('connection',setup);ready()});
+  p.on('error',e=>{if(e.type==='unavailable-id'){try{p.destroy()}catch(x){}join()}else status('Error: '+e.type)});
+  p.on('disconnected',()=>{try{p.reconnect()}catch(e){}});
+}
+function ready(){render()}
+function render(){
+  const ids=Object.keys(info),box=$('#peers');
+  box.innerHTML='';
+  ids.forEach(id=>{
+    const p=info[id],d=document.createElement('div');d.className='peer';
+    d.innerHTML='<b></b><span></span><div class="row"><button data-a="f">File</button><button class="g" data-a="t">Text</button></div>';
+    d.querySelector('b').textContent=p.name;d.querySelector('span').textContent=p.os;
+    d.querySelector('[data-a=f]').onclick=()=>{target=id;$('#fi').click()};
+    d.querySelector('[data-a=t]').onclick=()=>{target=id;$('#tt').textContent='Text bhejo: '+p.name;$('#tx').value='';$('#td').showModal()};
+    box.appendChild(d);
+  });
+  status(ids.length?ids.length+' device connected - file ya text bhejo':(room&&room.auto?'Same WiFi par doosra device dhundh rahe hain... doosre device par bhi SanDrop kholo':'Room mein doosre device ka intezar... QR scan karwao'));
+}
+function add(o){
+  const inbox=$('#inbox');if(!inbox.querySelector('.it'))inbox.innerHTML='';
+  const el=document.createElement('div');el.className='it';
+  const f=document.createElement('small');f.textContent=(o.from||'Device')+(o.file?' se file: '+o.file:' se text');el.appendChild(f);
+  if(o.text){const t=document.createElement('div');t.textContent=o.text;el.appendChild(t);
+    const b=document.createElement('button');b.className='g';b.style.marginTop='8px';b.textContent='Copy';
+    b.onclick=()=>navigator.clipboard.writeText(o.text).then(()=>b.textContent='Copy ho gaya');el.appendChild(b);
+    if(/^https?:\/\//.test(o.text.trim())){const a=document.createElement('a');a.href=o.text.trim();a.target='_blank';a.rel='noopener';a.textContent=' Kholo';a.style.marginLeft='10px';el.appendChild(a)}}
+  if(o.prog)el.insertAdjacentHTML('beforeend','<div class="pr"><div></div></div>');
+  inbox.prepend(el);return el;
+}
+// send
+$('#ts').onclick=()=>{const v=$('#tx').value;if(v&&conns[target]){conns[target].send({t:'text',text:v})}$('#td').close()};
+$('#tc').onclick=()=>$('#td').close();
+$('#fi').onchange=async e=>{
+  const c=conns[target];if(!c)return;
+  for(const f of e.target.files){
+    const id=Math.random().toString(36).slice(2),el=add({file:f.name,from:'Aap ('+(info[target]||{}).name+' ko bhej rahe)',prog:true});
+    c.send({t:'m',id,name:f.name,size:f.size,type:f.type});
+    const S=131072;
+    for(let o=0;o<f.size;o+=S){
+      c.send({t:'c',id,b:await f.slice(o,o+S).arrayBuffer()});
+      el.querySelector('.pr div').style.width=(Math.min(o+S,f.size)/f.size*100)+'%';
+      while(c.dataChannel&&c.dataChannel.bufferedAmount>2e6)await new Promise(r=>setTimeout(r,25));
+    }
+    el.querySelector('.pr').outerHTML='<span style="color:var(--ok);font-weight:600">Bhej diya</span>';
+  }
+  e.target.value='';
+};
+// drag and drop on page when exactly one peer
+addEventListener('dragover',e=>e.preventDefault());
+addEventListener('drop',e=>{e.preventDefault();const ids=Object.keys(info);if(ids.length===1&&e.dataTransfer.files.length){target=ids[0];$('#fi').files=e.dataTransfer.files;$('#fi').onchange({target:$('#fi')})}});
+// QR show
+function link(){return location.origin+location.pathname+'#r='+room.id}
+$('#qrBtn').onclick=()=>{
+  const q=qrcode(0,'M');q.addData(link());q.make();
+  $('#qr').innerHTML=q.createSvgTag(5,0);$('#qrl').textContent=link();$('#qd').showModal();
+};
+$('#cp').onclick=()=>navigator.clipboard.writeText(link()).then(()=>$('#cp').textContent='Copy ho gaya');
+$('#qx').onclick=()=>$('#qd').close();
+// QR scan
+let stream,scanning=false;
+$('#scanBtn').onclick=async()=>{
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    const v=$('#vid');v.srcObject=stream;await v.play();$('#sd').showModal();scanning=true;
+    const cv=document.createElement('canvas'),cx=cv.getContext('2d',{willReadFrequently:true});
+    (function loop(){
+      if(!scanning)return;
+      if(v.videoWidth){cv.width=v.videoWidth;cv.height=v.videoHeight;cx.drawImage(v,0,0);
+        const r=jsQR(cx.getImageData(0,0,cv.width,cv.height).data,cv.width,cv.height);
+        if(r){const m=r.data.match(/r=([\w-]+)/);if(m){stopScan();location.hash='r='+m[1];location.reload();return}}}
+      requestAnimationFrame(loop);
+    })();
+  }catch(e){alert('Camera allow karo ya phone ke camera app se QR scan karo.')}
+};
+function stopScan(){scanning=false;if(stream)stream.getTracks().forEach(t=>t.stop());$('#sd').close()}
+$('#sx').onclick=stopScan;
+$('#auto').onclick=()=>{history.replaceState(null,'',location.pathname);location.reload()};
+// start
+(async()=>{
+  room=await getRoom();hubId='sandrop-'+room.id;
+  if(room.fail)status('Auto mode nahi chala, QR se connect karo');
+  becomeHub();
+})();
+</script>
+</body>
+</html>
